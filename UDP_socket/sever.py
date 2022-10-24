@@ -1,10 +1,9 @@
 import socket
 
-localIP     = "127.0.0.1"
-localPort   = 20001
+localIP     = "140.118.122.155"
+localPort   = 5055
 bufferSize  = 1024
-msgFromServer       = "Hello UDP Client"
-bytesToSend         = str.encode(msgFromServer)
+
 
 
 # Create a datagram socket
@@ -16,15 +15,19 @@ UDPServerSocket.bind((localIP, localPort))
 print("UDP server up and listening")
 
 # Listen for incoming datagrams
+n= 0
 while(True):
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0]
-    address = bytesAddressPair[1]
-    clientMsg = "Message from Client:{}".format(message)
-    clientIP  = "Client IP Address:{}".format(address)
+    client_message = bytesAddressPair[0][0]
+    client_address = bytesAddressPair[0][1]
+    clientMsg = "Message from Client:{}".format(client_message)
+    clientIP  = "Client IP Address:{}".format(client_address)
     
     print(clientMsg)
     print(clientIP)
 
     # Sending a reply to client
-    UDPServerSocket.sendto(bytesToSend, address)
+    n+= 1
+    msgFromServer       = "World " + str(n)
+    bytesToSend         = str.encode(msgFromServer)
+    UDPServerSocket.sendto(bytesToSend, ("140.118.122.155", 5057))

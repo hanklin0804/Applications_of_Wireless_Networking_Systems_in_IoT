@@ -1,30 +1,28 @@
 import socket
 
-localIP     = "127.0.0.1"
-localPort   = 20001
+localIP     = "140.118.122.155"
+localPort   = 5056
 bufferSize  = 1024
-msgFromServer       = "Hello UDP Client"
-bytesToSend         = str.encode(msgFromServer)
 
 
 # Create a datagram socket
-UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+UDPProxySocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 # Bind to address and ip
-UDPServerSocket.bind((localIP, localPort))
+UDPProxySocket.bind((localIP, localPort))
 
-print("UDP server up and listening")
+print("UDP Proxy up and listening")
 
 # Listen for incoming datagrams
 while(True):
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0]
-    address = bytesAddressPair[1]
-    clientMsg = "Message from Client:{}".format(message)
-    clientIP  = "Client IP Address:{}".format(address)
-    
+    bytesAddressPair = UDPProxySocket.recvfrom(bufferSize)
+    client_message = bytesAddressPair[0]
+    client_address = bytesAddressPair[1]
+    clientMsg = "Message from Client:{}".format(client_message)
+    clientIP  = "Client IP Address:{}".format(client_address)
     print(clientMsg)
     print(clientIP)
 
+    msgFromProxy       = client_message
     # Sending a reply to client
-    UDPServerSocket.sendto(bytesToSend, address)
+    UDPProxySocket.sendto(client_message, ("140.118.122.155", 5055))
