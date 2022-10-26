@@ -2,7 +2,7 @@ import socket
 
 localIP     = "140.118.122.155"
 localPort   = 5056
-bufferSize  = 1024
+
 
 
 # Create a datagram socket
@@ -15,14 +15,11 @@ print("UDP Proxy up and listening")
 
 # Listen for incoming datagrams
 while(True):
-    bytesAddressPair = UDPProxySocket.recvfrom(bufferSize)
-    client_message = bytesAddressPair[0]
-    client_address = bytesAddressPair[1]
-    clientMsg = "Message from Client:{}".format(client_message)
-    clientIP  = "Client IP Address:{}".format(client_address)
-    print(clientMsg)
-    print(clientIP)
+    clientMsg , clientIP = UDPProxySocket.recvfrom(1024)
 
-    msgFromProxy       = client_message
-    # Sending a reply to client
-    UDPProxySocket.sendto(client_message, ("140.118.122.155", 5055))
+    print("Message from Client: ",clientMsg.decode())
+    print("Client IP Address: ",clientIP)
+
+
+    # Sending a msg to server
+    UDPProxySocket.sendto(clientMsg, ("140.118.122.155", 5055))

@@ -2,32 +2,23 @@ import socket
 
 localIP     = "140.118.122.155"
 localPort   = 5055
-bufferSize  = 1024
 
 
 
 # Create a datagram socket
-UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+UDPSeverSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 # Bind to address and ip
-UDPServerSocket.bind((localIP, localPort))
+UDPSeverSocket.bind((localIP, localPort))
 
-print("UDP server up and listening")
+print("UDP Sever up and listening")
 
 # Listen for incoming datagrams
-n= 0
 while(True):
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    client_message = bytesAddressPair[0][0]
-    client_address = bytesAddressPair[0][1]
-    clientMsg = "Message from Client:{}".format(client_message)
-    clientIP  = "Client IP Address:{}".format(client_address)
-    
-    print(clientMsg)
-    print(clientIP)
+    SeverMsg, SeverIP = UDPSeverSocket.recvfrom(1024)
+    print("Message from Proxy: ",SeverMsg.decode())
+    print("Proxy IP Address: ",SeverIP)
 
-    # Sending a reply to client
-    n+= 1
-    msgFromServer       = "World " + str(n)
-    bytesToSend         = str.encode(msgFromServer)
-    UDPServerSocket.sendto(bytesToSend, ("140.118.122.155", 5057))
+    msg = 'World ' +str(SeverMsg.decode().split(' ')[1])
+    # Sending a msg to server
+    UDPSeverSocket.sendto(msg.encode(), ("140.118.122.155", 5057))
