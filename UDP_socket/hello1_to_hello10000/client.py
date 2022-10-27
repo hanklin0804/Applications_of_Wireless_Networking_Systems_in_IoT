@@ -13,7 +13,6 @@ UDPClientSocket.bind((localIP, localPort))
 
 print("UDP Client up and listening")
 
-time_start = time.time()
 # Listen for incoming datagrams
 n = 0
 while(n< 10000):
@@ -28,5 +27,4 @@ while(n< 10000):
     print("Message from Sever: ",clientMsg.decode())
     print("Sever IP Address:", clientIP,"\n")
 
-print(time.time()-time_start)
 
