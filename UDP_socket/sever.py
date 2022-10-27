@@ -1,7 +1,7 @@
 import socket
 
 localIP     = "140.118.122.155"
-localPort   = 5055
+localPort   = 5405
 
 
 
@@ -17,8 +17,8 @@ print("UDP Sever up and listening")
 while(True):
     SeverMsg, SeverIP = UDPSeverSocket.recvfrom(1024)
     print("Message from Proxy: ",SeverMsg.decode())
-    print("Proxy IP Address: ",SeverIP)
+    print("Proxy IP Address: ",SeverIP,"\n")
 
     msg = 'World ' +str(SeverMsg.decode().split(' ')[1])
-    # Sending a msg to server
-    UDPSeverSocket.sendto(msg.encode(), ("140.118.122.155", 5057))
+    # Sending a msg to Client
+    UDPSeverSocket.sendto(msg.encode(), ("140.118.122.155", 5407))
