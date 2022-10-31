@@ -1,6 +1,6 @@
 import socket
 
-localIP     = "140.118.122.155"
+localIP     = "127.0.0.1"
 localPort   = 5405
 
 
@@ -21,9 +21,9 @@ while(True):
         print("Proxy IP Address: ",SeverIP,"\n")
 
         msg = 'World ' +str(SeverMsg.decode().split(' ')[1])
-        print(msg)
+        
         # Sending a msg to Client
-        UDPSeverSocket.sendto(msg.encode(), ("140.118.122.155", 5407))
+        UDPSeverSocket.sendto(msg.encode(), ("127.0.0.1", 5407))
     except:
         # Create a datagram socket
         UDPSeverSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)

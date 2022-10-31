@@ -21,7 +21,7 @@ while(True):
         print("Proxy IP Address: ",SeverIP,"\n")
 
         msg = 'World ' +str(SeverMsg.decode().split(' ')[1])
-        print(msg)
+
         # Sending a msg to Client
         UDPSeverSocket.sendto(msg.encode(), ("140.118.122.155", 5407))
         

@@ -41,10 +41,11 @@ while(True):
                 print(proxyMsg.decode(),' id delays 100 ms ')
             # Sending a msg to server
             UDPProxySocket.sendto(proxyMsg, ("140.118.122.155", 5405))
-            
+
         if int(proxyMsg.decode().split(' ')[1]) >= 10000:
             print('num of drop: ',drop_num)
             print('num of delay: ',deley_num)
+            break
             
     except:
         # Create a datagram socket

@@ -19,6 +19,7 @@ n = 0
 a = 0
 clientMsg = ''
 clientIP = ''
+start_time = time.time()
 while(True):
     if n < 10000:
         # Sending a msg to Proxy
@@ -36,7 +37,7 @@ while(True):
     print("Sever IP Address:", clientIP,"\n")
     if int(clientMsg.decode().split(' ')[1]) >= 10000:
         break
-
+print( time.time() - start_time )
 
 
 
