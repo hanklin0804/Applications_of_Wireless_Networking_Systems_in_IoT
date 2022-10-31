@@ -1,6 +1,7 @@
 import socket
 import time
 import select
+
 localIP     = "140.118.122.155"
 localPort   = 5407
 
@@ -27,10 +28,12 @@ while(True):
         UDPClientSocket.sendto(msg.encode(), ("140.118.122.155", 5406))
 
     
-    # timeout setting 10ms
-    ready = select.select([UDPClientSocket], [], [], 0.01)
+    # timeout setting 120ms
+    ready = select.select([UDPClientSocket], [], [], 0.12)
     if ready[0]:
         clientMsg, clientIP = UDPClientSocket.recvfrom(1024)
+    else:
+        n -= 1
 
     print("Message from Sever: ",clientMsg.decode())
     print("Sever IP Address:", clientIP,"\n")

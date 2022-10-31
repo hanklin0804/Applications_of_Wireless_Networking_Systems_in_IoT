@@ -1,0 +1,5 @@
+Following 1, we further implement loss and delay functions in the UDP proxy. Instead of directly forwarding packets, the UDP proxy behaves as the following:
+When the UDP proxy receives the “Hello i” message,
+-- it drops each received packet with 10% probability if i is even number.
+-- it delays 100 ms the received packet with 5% probability before
+forwarding to the server if i is odd number. 

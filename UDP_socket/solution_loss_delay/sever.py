@@ -24,7 +24,6 @@ while(True):
         print(msg)
         # Sending a msg to Client
         UDPSeverSocket.sendto(msg.encode(), ("140.118.122.155", 5407))
-        
     except:
         # Create a datagram socket
         UDPSeverSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
