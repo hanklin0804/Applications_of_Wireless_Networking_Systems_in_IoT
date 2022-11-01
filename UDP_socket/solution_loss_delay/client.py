@@ -1,8 +1,7 @@
 import socket
 import time
 import select
-
-localIP     = "127.0.0.1"
+localIP     = "140.118.122.155"
 localPort   = 5407
 
 
@@ -17,8 +16,7 @@ print("UDP Client up and listening")
 
 # Listen for incoming datagrams
 n = 0
-a = 0
-clientMsg = ''.encode()
+clientMsg = 'test 0'.encode()
 clientIP = ''
 start_time = time.time()
 while(True):
@@ -26,19 +24,25 @@ while(True):
         # Sending a msg to Proxy
         n += 1
         msg = 'hello '+ str(n)
-        UDPClientSocket.sendto(msg.encode(), ("127.0.0.1", 5406))
+
+        UDPClientSocket.sendto(msg.encode(), ("140.118.122.155", 5406))
 
     
-    # timeout setting 2ms
-    ready = select.select([UDPClientSocket], [], [], 0.002)
+    # timeout setting 10ms
+    ready = select.select([UDPClientSocket], [], [], 0.01)
     if ready[0]:
         clientMsg, clientIP = UDPClientSocket.recvfrom(1024)
-    else:
+    else: 
+        # 解決掉包跟延遲
         n -= 1
-
+    # clientMsg, clientIP = UDPClientSocket.recvfrom(1024)
     print("Message from Sever: ",clientMsg.decode())
     print("Sever IP Address:", clientIP,"\n")
     if int(clientMsg.decode().split(' ')[1]) >= 10000:
         break
-
 print( time.time() - start_time )
+
+
+
+
+

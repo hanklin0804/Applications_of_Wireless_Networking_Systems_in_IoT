@@ -16,7 +16,6 @@ print("UDP Client up and listening")
 
 # Listen for incoming datagrams
 n = 0
-a = 0
 clientMsg = ''
 clientIP = ''
 start_time = time.time()
