@@ -1,7 +1,7 @@
 import socket
 import time
 import select
-localIP     = "140.118.122.155"
+localIP     = "127.0.0.1"
 localPort   = 5407
 
 
@@ -25,7 +25,7 @@ while(True):
         n += 1
         msg = 'hello '+ str(n)
 
-        UDPClientSocket.sendto(msg.encode(), ("140.118.122.155", 5406))
+        UDPClientSocket.sendto(msg.encode(), ("127.0.0.1", 5406))
 
     
     # timeout setting 10ms
