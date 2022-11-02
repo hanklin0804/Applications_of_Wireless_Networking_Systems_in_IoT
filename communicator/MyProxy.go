@@ -33,51 +33,36 @@ func NewProxyAgent() *ProxyAgent {
 }
 
 func (m *ProxyAgent) Run() bool {
-	m.recvConn, _ = net.ListenPacket("udp", ProxyPort)
-	for !m.reconnect() {
-		fmt.Println("reconnect")
-	}
-
-	go m.read()
-	return true
-}
-func (m *ProxyAgent) reconnect() bool {
 	var err error = nil
-	if m.targetConn != nil {
-		m.targetConn.Close()
-		m.targetConn, err = net.Dial("udp", ServerAddr)
-	}
+	m.recvConn, err = net.ListenPacket("udp", ProxyPort)
 	if err != nil {
-		time.Sleep(200 * time.Millisecond)
 		return false
-	} else {
-		return true
 	}
 
-}
-
-func (m *ProxyAgent) write(data []byte) {
-
-	var err error
 	for {
-		_, err = m.targetConn.Write(data)
-
+		m.targetConn, err = net.Dial("udp", ServerAddr)
 		if err != nil {
-
-			for !m.reconnect() {
-				fmt.Println("reconnect")
-			}
-
+			fmt.Println(err)
 		} else {
 			break
 		}
 	}
+	go m.read()
+	return true
+}
+
+func (m *ProxyAgent) write(data []byte) error {
+
+	_, err := m.targetConn.Write(data)
+
+	return err
 
 }
 
 func (m *ProxyAgent) read() {
-	bs := make([]byte, 1024)
+	bs := make([]byte, 256)
 	for {
+
 		len, _, err := m.recvConn.ReadFrom(bs)
 		if err != nil {
 			continue
@@ -93,7 +78,7 @@ func (m *ProxyAgent) onRecived(playload []byte, err error) {
 	if err != nil {
 		return
 	}
-	log.Println(string(playload))
+
 	switch rollEvent() {
 	case 0:
 		time.Sleep(100 * time.Millisecond)
@@ -102,5 +87,6 @@ func (m *ProxyAgent) onRecived(playload []byte, err error) {
 	case 2:
 		m.write(playload)
 	}
+	log.Println(string(playload))
 
 }

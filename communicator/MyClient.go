@@ -3,10 +3,8 @@ package communicator
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -32,49 +30,52 @@ func NewClientAgent() *ClientAgent {
 }
 
 func (m *ClientAgent) Run() bool {
-	m.recvConn, _ = net.ListenPacket("udp", ClientPort)
-	for !m.reconnect() {
-		fmt.Println("reconnect")
-	}
-	go m.read()
-	return true
-}
-func (m *ClientAgent) reconnect() bool {
 	var err error = nil
-	if m.targetConn != nil {
-		m.targetConn.Close()
-		m.targetConn, err = net.Dial("udp", ProxyAddr)
-	}
+	m.recvConn, err = net.ListenPacket("udp", ClientPort)
 	if err != nil {
-		time.Sleep(200 * time.Millisecond)
+		fmt.Println(err)
 		return false
-	} else {
-		return true
 	}
 
-}
-func (m *ClientAgent) write(data []byte) {
-
-	var err error
 	for {
-		_, err = m.targetConn.Write(data)
-
+		m.targetConn, err = net.Dial("udp", ProxyAddr)
 		if err != nil {
-
-			for !m.reconnect() {
-				fmt.Println("reconnect")
-			}
-
+			fmt.Println(err)
 		} else {
 			break
 		}
 	}
 
+	go m.read()
+	return true
+}
+
+// func (m *ClientAgent) reconnect() bool {
+// 	var err error = nil
+// 	if m.targetConn != nil {
+// 		m.targetConn.Close()
+// 		m.targetConn, err = net.Dial("udp", ProxyAddr)
+// 	}
+// 	if err != nil {
+// 		time.Sleep(200 * time.Millisecond)
+// 		return false
+// 	} else {
+// 		return true
+// 	}
+
+// }
+func (m *ClientAgent) write(data []byte) error {
+
+	var err error
+	_, err = m.targetConn.Write(data)
+	return err
+
 }
 
 func (m *ClientAgent) read() {
-	bs := make([]byte, 1024)
+	bs := make([]byte, 256)
 	for {
+
 		len, _, err := m.recvConn.ReadFrom(bs)
 		if err != nil {
 			continue
@@ -98,13 +99,13 @@ func (m *ClientAgent) onRecived(playload []byte, err error) {
 }
 
 func (m *ClientAgent) Send(packet MyPacket) MyPacket {
-	packet.ID = uuid.NewString()
+	// packet.ID =
 
 	content, _ := json.Marshal(packet)
 
 	if m.targetConn != nil {
+		log.Println(string(content))
 		m.write(content)
-		// fmt.Println("aaa")
 	}
 
 	track := m.packetManager.RequestPacket(packet)

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
-	"time"
 )
 
 type ServerAgent struct {
@@ -26,48 +25,32 @@ func (m *ServerAgent) Run() bool {
 	if err != nil {
 		return false
 	}
-	for !m.reconnect() {
-		fmt.Println("reconnect")
-	}
 
-	go m.read()
-	return true
-}
-
-func (m *ServerAgent) reconnect() bool {
-	var err error = nil
-	if m.targetConn != nil {
-		m.targetConn.Close()
-		m.targetConn, err = net.Dial("udp", ClientAddr)
-	} else {
-		time.Sleep(200 * time.Millisecond)
-	}
-	return err == nil
-
-}
-
-func (m *ServerAgent) write(data []byte) {
-
-	var err error
 	for {
-		_, err = m.targetConn.Write(data)
-
+		m.targetConn, err = net.Dial("udp", ClientAddr)
 		if err != nil {
-
-			for !m.reconnect() {
-				fmt.Println("reconnect")
-			}
-
+			fmt.Println(err)
 		} else {
 			break
 		}
 	}
+	go m.read()
+	return true
+}
+
+func (m *ServerAgent) write(data []byte) error {
+
+	var err error
+	_, err = m.targetConn.Write(data)
+	return err
 
 }
 
 func (m *ServerAgent) read() {
-	bs := make([]byte, 1024)
+	// bs := make([]byte, 1024)
+	bs := make([]byte, 256)
 	for {
+
 		len, _, err := m.recvConn.ReadFrom(bs)
 		if err != nil {
 			continue
