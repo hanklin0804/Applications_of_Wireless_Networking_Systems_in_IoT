@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -50,20 +52,6 @@ func (m *ClientAgent) Run() bool {
 	return true
 }
 
-// func (m *ClientAgent) reconnect() bool {
-// 	var err error = nil
-// 	if m.targetConn != nil {
-// 		m.targetConn.Close()
-// 		m.targetConn, err = net.Dial("udp", ProxyAddr)
-// 	}
-// 	if err != nil {
-// 		time.Sleep(200 * time.Millisecond)
-// 		return false
-// 	} else {
-// 		return true
-// 	}
-
-// }
 func (m *ClientAgent) write(data []byte) error {
 
 	var err error
@@ -99,8 +87,7 @@ func (m *ClientAgent) onRecived(playload []byte, err error) {
 }
 
 func (m *ClientAgent) Send(packet MyPacket) MyPacket {
-	// packet.ID =
-
+	packet.ID = uuid.NewString()
 	content, _ := json.Marshal(packet)
 
 	if m.targetConn != nil {
@@ -109,10 +96,11 @@ func (m *ClientAgent) Send(packet MyPacket) MyPacket {
 	}
 
 	track := m.packetManager.RequestPacket(packet)
-	var replied bool
-	if replied = track.StartTrack(); replied {
+	result := track.StartTrack()
+	if !result {
 		m.packetManager.RequestPacket(packet)
 	}
+
 	replyPacket := track.Packet
 	return replyPacket
 }

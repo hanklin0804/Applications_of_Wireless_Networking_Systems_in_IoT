@@ -7,12 +7,12 @@ import (
 )
 
 type ClientPacketManager struct {
-	commandMap map[string]*PacketTrack
-	mux        sync.Mutex
+	packetMap map[string]*PacketTrack
+	mux       sync.Mutex
 }
 
 func newClientPacketManager() *ClientPacketManager {
-	return &ClientPacketManager{commandMap: make(map[string]*PacketTrack)}
+	return &ClientPacketManager{packetMap: make(map[string]*PacketTrack)}
 }
 func (m *ClientPacketManager) ProccessMessage(jsonString []byte) (*MyPacket, error) {
 	cmd := MyPacket{}
@@ -30,10 +30,10 @@ func (m *ClientPacketManager) proccessCommand(packet *MyPacket) (*MyPacket, erro
 	pack := MyPacket{}
 	m.mux.Lock()
 	defer m.mux.Unlock()
-	if val, isExisted := m.commandMap[packet.ID]; isExisted {
+	if val, isExisted := m.packetMap[packet.ID]; isExisted {
 		val.Finish(packet)
-		delete(m.commandMap, packet.ID) //對應的Command會被刪掉
-		pack = val.Packet               //因此我們先把該指令內容複製到暫時的容器裡
+		delete(m.packetMap, packet.ID) //對應的Command會被刪掉
+		pack = val.Packet              //因此我們先把該指令內容複製到暫時的容器裡
 		result = &pack
 	}
 	return result, nil
@@ -43,14 +43,14 @@ func (m *ClientPacketManager) proccessCommand(packet *MyPacket) (*MyPacket, erro
 func (m *ClientPacketManager) RequestPacket(packet MyPacket) *PacketTrack {
 	m.mux.Lock()
 	defer m.mux.Unlock()
-	if val, isExisted := m.commandMap[packet.ID]; isExisted {
-		val.Finish(&packet)
-		delete(m.commandMap, packet.ID)
+	if _, isExisted := m.packetMap[packet.ID]; isExisted {
+		delete(m.packetMap, packet.ID)
+		return nil
 	}
 
-	if _, isExisted := m.commandMap[packet.ID]; !isExisted {
+	if _, isExisted := m.packetMap[packet.ID]; !isExisted {
 		tempTrack := new(PacketTrack)
-		m.commandMap[packet.ID] = tempTrack
+		m.packetMap[packet.ID] = tempTrack
 		return tempTrack
 	}
 	return nil

@@ -10,10 +10,11 @@ type PacketTrack struct {
 func (m *PacketTrack) StartTrack() bool {
 	m.track = make(chan bool)
 	select {
+	case <-time.After(time.Millisecond * 1):
+		return false
 	case <-m.track:
 		return true
-	case <-time.After(time.Millisecond * 10):
-		return false
+
 	}
 
 }

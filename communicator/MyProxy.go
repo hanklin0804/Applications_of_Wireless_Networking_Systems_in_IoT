@@ -5,7 +5,11 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"strconv"
+	"strings"
 	"time"
+
+	"github.com/buger/jsonparser"
 )
 
 type ProxyAgent struct {
@@ -13,12 +17,12 @@ type ProxyAgent struct {
 	recvConn   net.PacketConn
 }
 
-func rollEvent() int {
+func rollEvent(isEven bool) int {
 	rand.Seed(time.Now().UnixNano())
 	num := rand.Intn(20)
-	if num == 0 { // delay 100ms
+	if (num == 0) && !isEven { // delay 100ms
 		return 0
-	} else if num == 1 || num == 2 { //drop
+	} else if (num == 1 || num == 2) && isEven { //drop
 		return 1
 	} else {
 		return 2
@@ -78,15 +82,20 @@ func (m *ProxyAgent) onRecived(playload []byte, err error) {
 	if err != nil {
 		return
 	}
-
-	switch rollEvent() {
+	contentText, _ := jsonparser.GetString(playload, "Content")
+	num, _ := strconv.Atoi(strings.Split(contentText, " ")[1])
+	switch rollEvent(num%2 == 0) {
 	case 0:
 		time.Sleep(100 * time.Millisecond)
+		m.write(playload)
+		// log.Println(string(playload))
 	case 1:
-		return
+		// return
+		// m.write(playload)
+		// log.Println(string(playload))
 	case 2:
 		m.write(playload)
+		log.Println(string(playload))
 	}
-	log.Println(string(playload))
 
 }
